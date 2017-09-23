@@ -1,0 +1,385 @@
+<!--
+
+-->
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-item/paper-icon-item.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item-body.html">
+<link rel="import" href="../../bower_components/paper-progress/paper-progress.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+<link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../../bower_components/vaadin-upload/vaadin-upload.html">
+<link rel="import" href="./key-manager-keys.html">
+<link rel="import" href="./key-manager-list-item.html">
+<link rel="import" href="../base-auth/base-auth.html">
+
+<dom-module id="bits-key-manager-app">
+  <template>
+    <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
+    <style>
+      :host {
+        height: 100%;
+        @apply(--layout-vertical);
+        --paper-dialog: {
+          min-width: 320px;
+        }
+        --paper-dialog-background-color: #fff;
+        --paper-progress-active-color: var(--primary-color);
+      }
+
+      app-toolbar {
+        color: var(--primary-text-color);
+        box-sizing: border-box;
+        border-bottom: 1px solid;
+        border-bottom-color: var(--divider-color);
+      }
+
+      app-toolbar .label {
+        @apply(--paper-font-body1);
+      }
+
+      .base {
+        box-sizing: border-box;
+        border-bottom: 1.1px solid rgba(0, 0, 0, 0.05);
+      }
+
+      .toolbar {
+        min-height: 48px;
+        padding: 0px 16px;
+      }
+
+      .toolbar .title {
+        @apply(--layout-flex);
+        @apply(--paper-font-title);
+      }
+
+      #list {
+        @apply(--layout-flex);
+        overflow-y: auto;
+      }
+
+      .item, .item .icon, .info, .toolbar {
+        @apply(--layout-horizontal);
+        @apply(--layout-center);
+      }
+
+      .item {
+        @apply(--paper-font-subhead);
+        padding: 0px 16px;
+        min-height: 48px;
+        transition: background-color 0.3s ease;
+      }
+      .item .icon {
+        width: 56px;
+      }
+      .item:hover {
+        background-color: var(--paper-grey-200);
+      }
+      .item.iron-selected {
+        background-color: var(--light-accent-color);
+      }
+
+      .label {
+        @apply(--layout-flex);
+        font-weight: bold;
+        font-size: 14px;
+      }
+
+      .value {
+        font-size: 12px;
+        color: var(--secondary-text-color);
+      }
+
+      .check {
+        display: none;
+      }
+
+      .item.iron-selected .check {
+        display: block;
+      }
+
+      .dialog-content {
+        overflow: auto;
+        max-height: 320px;
+      }
+
+      .installed-version {
+        @apply(--layout-flex);
+      }
+
+      .required-version {
+        color: var(--paper-red-500);
+      }
+
+      #packageVersionList {
+        max-height: 200px;
+      }
+
+      .package-version-name {
+        @apply(--paper-font-subhead);
+      }
+
+      .package-version-version {
+        @apply(--paper-font-code1);
+        color: var(--secondary-text-color);
+      }
+
+      .wrapper {
+        max-height: 50vh;
+        overflow-y: auto;
+      }
+
+      .canvasCard {
+        @apply(--layout-horizontal);
+        @apply(--layout-center);
+        @apply(--layout-center-justified);
+        @apply(--shadow-elevation-2dp);
+
+        background-color: #fff;
+        color: rgba(0, 0, 0, 0.54);
+
+        margin: 48px auto;
+
+        box-sizing: border-box;
+        padding: 48px 12px;
+
+        width: 100%;
+        max-width: 960px;
+      }
+
+      .canvasCard .header {
+        @apply(--paper-font-subhead);
+        margin-left: 8px;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+    </style>
+
+    <base-auth id="auth" access-token="{{accessToken}}"></base-auth>
+
+    <key-manager-keys
+      id="keys"
+      keys="{{keys}}"
+    </key-manager-keys>
+
+    <app-toolbar>
+      <div main-title>Keys</div>
+
+      <paper-icon-button id="keys-select-all" icon="select-all" on-tap="onSelectAll" disabled="[[_computeSelectAllDisabled(keys.*, selectedKeys.*)]]"></paper-icon-button>
+      <paper-tooltip for="keys-select-all">Select All</paper-tooltip>
+
+      <paper-icon-button id="keys-select-clear" icon="clear" on-tap="onClearSelection" disabled="[[!hasSelectedKeys]]"></paper-icon-button>
+      <paper-tooltip for="keys-select-clear">Clear</paper-tooltip>
+
+      <paper-icon-button id="keys-upload" icon="cloud-upload" on-tap="onImportKey"></paper-icon-button>
+      <paper-tooltip for="keys-upload">Upload</paper-tooltip>
+    </app-toolbar>
+
+    <div id="noKeys" class="canvasCard">
+      <iron-icon icon="icons:block"></iron-icon>
+      <span class="header">No Keys</span>
+    </div>
+
+    <iron-selector id="list" attr-for-selected="key" multi selected-values="{{selectedKeys}}">
+      <template is="dom-repeat" items="[[keys]]" as="key">
+        <key-manager-list-item class="item" key="[[key]]" on-key-info="onKeyInfo" on-key-download="onKeyDownload" selected$="[[selected]]"></key-manager-list-item>
+      </template>
+    </iron-selector>
+
+  <paper-dialog id="info-dialog" no-cancel-on-esc-key>
+    <h2>Key Info</h2>
+    <div class="dialog-content">
+      <div class="layout vertical">
+        <div class="info">
+          <div class="label">Name</div>
+          <div class="value">{{keyInfo.name}}</div>
+        </div>
+        <div class="info">
+          <div class="label">Hash</div>
+          <div class="value">{{keyInfo._hash}}</div>
+        </div>
+        <div class="info">
+          <div class="label">Path</div>
+          <div class="value">{{keyInfo._filepath}}</div>
+        </div>
+      </div>
+    </div>
+    <div class="buttons">
+      <paper-button dialog-confirm>OK</paper-button>
+    </div>
+  </paper-dialog>
+
+  <paper-dialog id="confirm-dialog" no-cancel-on-esc-key>
+    <h2>[[confirmHeading]]</h2>
+    <div>Are you sure?</div>
+    <div class="buttons">
+      <paper-button dialog-dismiss>Cancel</paper-button>
+      <paper-button dialog-confirm>Yes</paper-button>
+    </div>
+  </paper-dialog>
+
+  <paper-dialog id="upload-dialog">
+    <h2>Upload Keys</h2>
+
+    <div class="wrapper">
+      <vaadin-upload
+        form-data-name="image"
+        target="/api/keys-router/keys"
+        headers='{"Authorization": "Bearer [[accessToken]]"}'
+        method="POST">
+        <!-- <div class="file-list">
+          <ul>
+            <template is="dom-repeat" items="{{files}}" as="file">
+              <li>[[file.name]]: [[file.status]]
+            </template>
+          </ul>
+        </div> -->
+      </vaadin-upload>
+    </div>
+
+    <div class="buttons">
+      <paper-button dialog-dismiss>Cancel</paper-button>
+      <paper-button dialog-confirm>Done</paper-button>
+    </div>
+  </paper-dialog>
+
+  </template>
+  <script>
+    (() => {
+      'use strict';
+
+      Polymer({
+        is: 'bits-key-manager-app',
+
+        properties: {
+          keys: {
+            type: Array,
+            observer: '_observeKeys'
+          },
+          hasKeys: {
+             type: Boolean,
+             computed: '_computeHasKeys(keys)'
+          },
+          loadingState: {
+            type: Boolean,
+            value: true
+          }
+        },
+
+        behaviors: [
+          Polymer.IronResizableBehavior
+        ],
+
+        observers: [
+          '_emptyStates(hasKeys)'
+        ],
+
+        listeners: {
+          'iron-overlay-opened': 'onIronOverlayOpened',
+          'upload-success': 'onUploadSuccess'
+        },
+
+        _computeHasKeys: function(keys) {
+          return Array.isArray(keys) && 0 < keys.length;
+        },
+
+        _emptyStates: function(hasKeys) {
+          Polymer.dom(this.$.noKeys).classList.toggle('hidden', hasKeys);
+        },
+
+        // https://github.com/PolymerElements/paper-dialog/issues/7
+        patchOverlay: function(e) {
+          if (e.target.withBackdrop) {
+            e.target.parentNode.insertBefore(e.target._backdrop, e.target);
+          }
+        },
+
+        _observeKeys: function(keys) {
+          // Iron list is buggy and doesn't display items on initial load of page refresh
+          this.async(this.notifyResize, 3000);
+        },
+
+        onIronOverlayOpened: function(e) {
+          e.target.notifyResize();
+        },
+
+        onKeyInfo: function(e, detail) {
+          console.log(detail);
+          this.keyInfo = detail;
+          this.$['info-dialog'].open();
+        },
+
+        onKeyDownload: function(e, detail) {
+          console.log(detail);
+          this.keyPath = detail;
+          this.fire('keys-manager-download', {filepath: detail});
+          //this.$['info-dialog'].open();
+        },
+
+        onClearSelection: function() {
+          this.selectedKeys = [];
+        },
+
+        onSelectAll: function() {
+          this.onClearSelection();
+          this.keys.forEach(function(key, index) {
+            this.$.list.selectIndex(index);
+          }, this);
+        },
+
+        onImportKey: function(e, deatil) {
+          // this.$.upload.files = [];
+          this.$['upload-dialog'].open();
+        },
+
+        onUploadSuccess: function() {
+          this.$.keys.updateKeys()
+          .then(() => console.log(this.$.keys));
+        },
+
+        _openConfirmDialog: function(heading) {
+          let self = this;
+          return new Promise(function(fulfill, reject) {
+            self.confirmHeading = heading || 'Loading...';
+
+            self._onIronOverlayClosed = function(e, detail) {
+              let closingReason = self.$['confirm-dialog'].closingReason;
+              self.unlisten(self.$['confirm-dialog'], 'iron-overlay-closed', '_onIronOverlayClosed');
+              if (closingReason.confirmed) {
+                fulfill(closingReason);
+              } else {
+                reject(new Error('User did not confirm'));
+              }
+            };
+
+            self.listen(self.$['confirm-dialog'], 'iron-overlay-closed', '_onIronOverlayClosed');
+            self.$['confirm-dialog'].open();
+          });
+        },
+
+        _closeProgressDialog: function() {
+          this.$['progress-dialog'].close();
+        },
+
+        _closeConfirmDialog: function() {
+          this.$['confirm-dialog'].close();
+        },
+
+        _computeSelectAllDisabled: function(keys, selectedKeys) {
+          return !Array.isArray(this.keys) || 0 >= this.keys.length ||
+            (Array.isArray(this.selectedKeys) && this.keys.length === this.selectedKeys.length);
+        }
+      });
+    })();
+  </script>
+</dom-module>

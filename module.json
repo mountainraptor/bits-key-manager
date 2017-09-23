@@ -1,0 +1,16 @@
+{
+    "name": "bits-key-manager",
+    "version": "1.0.0",
+    "dependencies": {
+        "bits-base": "^2.0.0"
+    },
+    "appDir": "app/",
+    "contentElement": "bits-key-manager-app",
+    "contentImport": "/elements/bits-key-manager/bits-key-manager-app.html",
+    "scopes": [
+      {"name": "public", "displayName": "Public"}
+    ],
+    "displayName": "Key Manager",
+    "icon": "icons:favorite",
+    "category": "Utilities"
+}

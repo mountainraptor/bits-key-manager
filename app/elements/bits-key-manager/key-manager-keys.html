@@ -1,0 +1,69 @@
+<!--
+-->
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../base-message-center/base-message-center-behavior.html">
+
+<script>
+  ((global) => {
+    'use strict';
+
+    const KEY_PREFIX = 'base#Keys ';
+    const KEY = {
+      REQUEST: {
+        LIST: KEY_PREFIX + 'list',
+        CREATE: KEY_PREFIX + 'create',
+        DELETE: KEY_PREFIX + 'delete',
+        GET_DEVICE_KEY: KEY_PREFIX + 'getDeviceKey',
+        GET_SIGNATURE_KEY: KEY_PREFIX +  'getSignatureKey'
+      },
+      EVENT: {
+        LIST: KEY_PREFIX + 'list'
+      }
+    }
+
+    Polymer({
+      is: 'key-manager-keys',
+
+      behaviors: [
+        /** @polymerBehavior BaseMessageCenterBehavior */
+        global.Bits.BaseMessageCenterBehavior
+      ],
+
+      properties: {
+        keys: {
+          type: Array,
+          readOnly: true,
+          notify: true
+        }
+      },
+
+      ready: function() {
+        this.addSocketEventListener(KEY.EVENT.LIST, this._onKeyList.bind(this));
+
+        this.addConnectRunnable(() => {
+          this.keysList()
+          .then((keys) => this._setKeys(keys))
+          .catch((err) => console.warn(err));
+        });
+      },
+
+      _onKeyList: function(keys, data) {
+        this._setKeys(keys);
+      },
+
+      updateKeys: function() {
+        return this.keysList()
+        .then((keys) => this._setKeys(keys))
+        .catch((err) => console.warn(err));
+      },
+
+      keysList: function() {
+        return this.sendRequest(KEY.REQUEST.LIST)
+        .catch((err) => {
+          console.warn(err);
+          return Promise.reject(err);
+        });
+      }
+    });
+  })(this);
+</script>

@@ -1,0 +1,159 @@
+<!--
+
+-->
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/iron-resizable-behavior/iron-resizable-behavior.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item-body.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+<link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
+
+<link rel="import" href="../base-auth/base-auth.html">
+
+<dom-module id="key-manager-list-item">
+  <template>
+    <style>
+      :host {
+        --paper-tooltip-background: var(--primary-text-color);
+        --paper-tooltip-opacity: 1.0;
+        @apply(--layout-horizontal);
+        @apply(--layout-center);
+        @apply(--paper-font-subhead);
+        min-height: 48px;
+        padding: 0px 16px;
+        cursor: pointer;
+      }
+
+      [item-icon] {
+        @apply(--layout-horizontal);
+        @apply(--layout-center);
+        width: 56px;
+      }
+
+      .base {
+        color: var(--primary-color);
+      }
+
+      .hover {
+        display: none;
+      }
+
+      :host(:hover) .hover {
+        display: block;
+      }
+
+      paper-icon-item:before {
+        display: none !important;
+      }
+
+      .action {
+        color: var(--secondary-text-color);
+      }
+
+      #list {
+        max-height: 200px;
+      }
+
+      #upgrade[disabled] {
+        pointer-events: all !important;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+    </style>
+
+    <base-auth access-token="{{accessToken}}"></base-auth>
+
+    <iron-icon id="display" icon="[[_getKeyIcon(key)]]" item-icon></iron-icon>
+
+    <paper-item-body two-line>
+      <div class="name">[[_getKeyName(key)]]</div>
+      <div secondary>[[_getKeyHash(key)]]</div>
+    </paper-item-body>
+
+    <paper-icon-button
+          id="info"
+          class="action hover"
+          icon="info-outline"
+          on-tap="onKeyInfo">
+    </paper-icon-button>
+
+    <!-- <a href="/api/keys-router/keys/test?access_token=[[accessToken]]" download="[[_getKeyName(key)]]">
+      <paper-icon-button
+          id="download"
+          class="action hover"
+          icon="file-download"
+          on-tap="onKeyDownload">
+      </paper-icon-button>
+    </a>
+    <paper-tooltip for="download" position="left" animation-delay="200" offset="0">Download</paper-tooltip> -->
+
+  </template>
+  <script>
+  (() => {
+    'use strict';
+
+    Polymer({
+      is: 'key-manager-list-item',
+
+      properties: {
+        key: {
+          type: Object,
+          observer: '_keyChanged'
+        }
+      },
+
+      behaviors: [
+        Polymer.IronResizableBehavior
+      ],
+
+      _getKeyIcon: function(key) {
+        if (!key) {
+          return 'help';
+        } else {
+          return 'communication:vpn-key';
+        }
+      },
+
+      _getKeyName: function(key) {
+        if (!key) {
+          return 'N/A';
+        } else {
+          return key.name;
+        }
+      },
+
+      _getKeyHash: function(key) {
+        if (!key) {
+          return 'N/A';
+        } else {
+          return key._hash;
+        }
+      },
+
+      _getKeyPath: function(key) {
+        if (!key) {
+          return 'N/A';
+        } else {
+          return key._filepath;
+        }
+      },
+
+      // onKeyDownload: function(e) {
+      //   e.stopPropagation();
+      //   this.fire('key-download', this.key._filepath);
+      // },
+
+      onKeyInfo: function(e) {
+        e.stopPropagation();
+        this.fire('key-info', this.key);
+      }
+
+    });
+  })();
+  </script>
+</dom-module>
