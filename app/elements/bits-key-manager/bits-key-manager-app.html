@@ -223,8 +223,8 @@
   </paper-dialog>
 
   <paper-dialog id="confirm-dialog" no-cancel-on-esc-key>
-    <h2>[[confirmHeading]]</h2>
-    <div>Are you sure?</div>
+    <h2>Delete Selected Keys?</h2>
+    <div>This action will delete the selected keys.</div>
     <div class="buttons">
       <paper-button dialog-dismiss>Cancel</paper-button>
       <paper-button dialog-confirm>Yes</paper-button>
@@ -324,13 +324,11 @@
         },
 
         onKeyInfo: function(e, detail) {
-          console.log(detail);
           this.keyInfo = detail;
           this.$['info-dialog'].open();
         },
 
         onKeyDownload: function(e, detail) {
-          console.log(detail);
           this.keyPath = detail;
           this.fire('keys-manager-download', {filepath: detail});
         },
@@ -374,10 +372,6 @@
           });
         },
 
-        _closeProgressDialog: function() {
-          this.$['progress-dialog'].close();
-        },
-
         _closeConfirmDialog: function() {
           this.$['confirm-dialog'].close();
         },
@@ -388,10 +382,19 @@
         },
 
         _onDeleteKeys: function(selectedKeys) {
+          let self = this;
+          this._openConfirmDialog()
+          .then(function() {
+            return self._deleteKeys(selectedKeys);
+          });
+        },
+
+        _deleteKeys: function(selectedKeys) {
           for (var key in this.selectedKeys) {
             this.$.keys.delete(this.selectedKeys[key]._hash)
             .then(() => this.$.keys.updateKeys());
           }
+          this.selectedKeys = [];
         },
 
       });
