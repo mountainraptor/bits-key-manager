@@ -181,6 +181,9 @@
       <paper-icon-button id="keys-select-clear" icon="clear" on-tap="onClearSelection" disabled="[[!hasSelectedKeys]]"></paper-icon-button>
       <paper-tooltip for="keys-select-clear">Clear</paper-tooltip>
 
+      <paper-icon-button id="keys-delete" icon="delete" on-tap="onDeleteKeys" disabled="[[!hasSelectedKeys]]"></paper-icon-button>
+      <paper-tooltip for="keys-delete">Delete</paper-tooltip>
+
       <paper-icon-button id="keys-upload" icon="cloud-upload" on-tap="onImportKey"></paper-icon-button>
       <paper-tooltip for="keys-upload">Upload</paper-tooltip>
     </app-toolbar>
@@ -263,6 +266,16 @@
              type: Boolean,
              computed: '_computeHasKeys(keys)'
           },
+          selectedKeys: {
+            type: Array,
+            value: function() {
+              return [];
+            }
+          },
+          hasSelectedKeys: {
+            type: Boolean,
+            computed: '_computeHasSelectedKeys(selectedKeys.*)'
+          },
           loadingState: {
             type: Boolean,
             value: true
@@ -284,6 +297,10 @@
 
         _computeHasKeys: function(keys) {
           return Array.isArray(keys) && 0 < keys.length;
+        },
+
+        _computeHasSelectedKeys: function(changes) {
+          return Array.isArray(this.selectedKeys) && 0 < this.selectedKeys.length;
         },
 
         _emptyStates: function(hasKeys) {
