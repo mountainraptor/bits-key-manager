@@ -11,6 +11,6 @@
       {"name": "public", "displayName": "Public"}
     ],
     "displayName": "Key Manager",
-    "icon": "icons:favorite",
+    "icon": "communication:vpn-key",
     "category": "Utilities"
 }

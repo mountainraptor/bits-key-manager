@@ -66,8 +66,6 @@
       }
     </style>
 
-    <base-auth access-token="{{accessToken}}"></base-auth>
-
     <iron-icon id="display" icon="[[_getKeyIcon(key)]]" item-icon></iron-icon>
 
     <paper-item-body two-line>
@@ -82,16 +80,6 @@
           on-tap="onKeyInfo">
     </paper-icon-button>
 
-    <!-- <a href="/api/keys-router/keys/test?access_token=[[accessToken]]" download="[[_getKeyName(key)]]">
-      <paper-icon-button
-          id="download"
-          class="action hover"
-          icon="file-download"
-          on-tap="onKeyDownload">
-      </paper-icon-button>
-    </a>
-    <paper-tooltip for="download" position="left" animation-delay="200" offset="0">Download</paper-tooltip> -->
-
   </template>
   <script>
   (() => {
@@ -102,8 +90,7 @@
 
       properties: {
         key: {
-          type: Object,
-          observer: '_keyChanged'
+          type: Object
         }
       },
 
