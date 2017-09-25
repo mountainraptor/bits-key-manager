@@ -181,7 +181,7 @@
       <paper-icon-button id="keys-select-clear" icon="clear" on-tap="onClearSelection" disabled="[[!hasSelectedKeys]]"></paper-icon-button>
       <paper-tooltip for="keys-select-clear">Clear</paper-tooltip>
 
-      <paper-icon-button id="keys-delete" icon="delete" on-tap="onDeleteKeys" disabled="[[!hasSelectedKeys]]"></paper-icon-button>
+      <paper-icon-button id="keys-delete" icon="delete" on-tap="_onDeleteKeys" disabled="[[!hasSelectedKeys]]"></paper-icon-button>
       <paper-tooltip for="keys-delete">Delete</paper-tooltip>
 
       <paper-icon-button id="keys-upload" icon="cloud-upload" on-tap="onImportKey"></paper-icon-button>
@@ -333,7 +333,6 @@
           console.log(detail);
           this.keyPath = detail;
           this.fire('keys-manager-download', {filepath: detail});
-          //this.$['info-dialog'].open();
         },
 
         onClearSelection: function() {
@@ -348,13 +347,11 @@
         },
 
         onImportKey: function(e, deatil) {
-          // this.$.upload.files = [];
           this.$['upload-dialog'].open();
         },
 
         onUploadSuccess: function() {
-          this.$.keys.updateKeys()
-          .then(() => console.log(this.$.keys));
+          this.$.keys.updateKeys();
         },
 
         _openConfirmDialog: function(heading) {
@@ -388,7 +385,15 @@
         _computeSelectAllDisabled: function(keys, selectedKeys) {
           return !Array.isArray(this.keys) || 0 >= this.keys.length ||
             (Array.isArray(this.selectedKeys) && this.keys.length === this.selectedKeys.length);
-        }
+        },
+
+        _onDeleteKeys: function(selectedKeys) {
+          for (var key in this.selectedKeys) {
+            this.$.keys.delete(this.selectedKeys[key]._hash)
+            .then(() => this.$.keys.updateKeys());
+          }
+        },
+
       });
     })();
   </script>

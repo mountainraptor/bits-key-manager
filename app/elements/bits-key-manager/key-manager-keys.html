@@ -63,7 +63,16 @@
           console.warn(err);
           return Promise.reject(err);
         });
+      },
+
+      delete: function(hash) {
+        return this.sendRequest(KEY.REQUEST.DELETE, {hash: hash})
+        .catch((err) => {
+          console.warn(err);
+          return Promise.reject(err);
+        });
       }
+
     });
   })(this);
 </script>
