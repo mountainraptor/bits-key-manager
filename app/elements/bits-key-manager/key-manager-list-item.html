@@ -11,6 +11,7 @@
 <link rel="import" href="../../bower_components/paper-styles/typography.html">
 <link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
 
+<link rel="import" href="../base-message-center/base-message-center.html">
 <link rel="import" href="../base-auth/base-auth.html">
 
 <dom-module id="key-manager-list-item">
@@ -66,6 +67,8 @@
       }
     </style>
 
+    <base-message-center id="messageCenter"></base-message-center>
+
     <iron-icon id="display" icon="[[_getKeyIcon(key)]]" item-icon></iron-icon>
 
     <paper-item-body two-line>
@@ -85,6 +88,20 @@
   (() => {
     'use strict';
 
+    function isPrivateKey(messageCenter, key) {
+      return messageCenter.sendRequest('keys-manager#keys isPrivate', key)
+      .then((isPrivate) => {
+        if(isPrivate) {
+          return 'communication:vpn-key';
+        } else {
+          return 'communication:import-export';
+        }
+      })
+      .catch((err) => {
+        console.error('err');
+      });
+    }
+
     Polymer({
       is: 'key-manager-list-item',
 
@@ -99,11 +116,10 @@
       ],
 
       _getKeyIcon: function(key) {
-        if (!key) {
-          return 'help';
-        } else {
-          return 'communication:vpn-key';
-        }
+        isPrivateKey(this.$.messageCenter, this.key)
+        .then((icon) => {
+          this.$.display.setAttribute("icon", icon);
+        });
       },
 
       _getKeyName: function(key) {
@@ -129,11 +145,6 @@
           return key._filepath;
         }
       },
-
-      // onKeyDownload: function(e) {
-      //   e.stopPropagation();
-      //   this.fire('key-download', this.key._filepath);
-      // },
 
       onKeyInfo: function(e) {
         e.stopPropagation();
