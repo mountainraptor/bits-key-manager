@@ -69,10 +69,10 @@
 
     <base-message-center id="messageCenter"></base-message-center>
 
-    <iron-icon id="display" icon="[[_getKeyIcon(key)]]" item-icon></iron-icon>
+    <iron-icon id="display" style="" icon="[[_getKeyIcon(key)]]" item-icon></iron-icon>
 
     <paper-item-body two-line>
-      <div class="name">[[_getKeyName(key)]]</div>
+      <div id="name" class="name">[[_getKeyName(key)]]</div>
       <div secondary>[[_getKeyHash(key)]]</div>
     </paper-item-body>
 
@@ -92,9 +92,9 @@
       return messageCenter.sendRequest('keys-manager#keys isPrivate', key)
       .then((isPrivate) => {
         if(isPrivate) {
-          return 'communication:vpn-key';
+          return true;
         } else {
-          return 'communication:import-export';
+          return false;
         }
       })
       .catch((err) => {
@@ -117,8 +117,13 @@
 
       _getKeyIcon: function(key) {
         isPrivateKey(this.$.messageCenter, this.key)
-        .then((icon) => {
-          this.$.display.setAttribute("icon", icon);
+        .then((bool) => {
+          this.$.display.setAttribute("icon", 'communication:vpn-key');
+          if(bool) {
+            this.$.display.setAttribute("style", 'color:red');
+          } else {
+            this.$.display.setAttribute("style", 'color:black');
+          }
         });
       },
 
@@ -126,6 +131,14 @@
         if (!key) {
           return 'N/A';
         } else {
+          isPrivateKey(this.$.messageCenter, this.key)
+          .then((bool) => {
+            if(bool) {
+              this.$.name.innerHTML=this.key.name + " (Private)";
+            } else {
+              this.$.name.innerHTML=this.key.name + " (Public)";
+            }
+          });
           return key.name;
         }
       },
