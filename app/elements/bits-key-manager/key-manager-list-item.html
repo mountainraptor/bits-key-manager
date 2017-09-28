@@ -67,6 +67,8 @@
       }
     </style>
 
+    <base-auth id="auth" access-token="{{accessToken}}"></base-auth>
+
     <base-message-center id="messageCenter"></base-message-center>
 
     <iron-icon id="display" style="" icon="[[_getKeyIcon(key)]]" item-icon></iron-icon>
@@ -76,11 +78,20 @@
       <div secondary>[[_getKeyHash(key)]]</div>
     </paper-item-body>
 
+    <a href="/api/keys-router/keys/[[_encodeKeyPath(key)]]/download?access_token=[[accessToken]]" download="[[key.filename]]" target="_blank" tabindex="-1">
+      <paper-icon-button
+          id="download"
+          class="action hover"
+          icon="icons:file-download"
+          on-tap="_onKeyDownload">
+      </paper-icon-button>
+    </a>
+
     <paper-icon-button
           id="info"
           class="action hover"
           icon="info-outline"
-          on-tap="onKeyInfo">
+          on-tap="_onKeyInfo">
     </paper-icon-button>
 
   </template>
@@ -159,9 +170,17 @@
         }
       },
 
-      onKeyInfo: function(e) {
+      _encodeKeyPath: function(key) {
+        return encodeURIComponent(key._filepath);
+      },
+
+      _onKeyInfo: function(e) {
         e.stopPropagation();
         this.fire('key-info', this.key);
+      },
+
+      _onKeyDownload: function(e) {
+        e.stopPropagation();
       }
 
     });
