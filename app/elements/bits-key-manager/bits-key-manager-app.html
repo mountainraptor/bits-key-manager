@@ -322,8 +322,12 @@
           }, this);
         },
 
-        onImportKey: function(e, deatil) {
+        onImportKey: function(e, detail) {
           this.$['upload-dialog'].open();
+        },
+
+        onGenerateKey: function(e, detail) {
+          this.$.keys.generateKey();
         },
 
         onUploadSuccess: function() {

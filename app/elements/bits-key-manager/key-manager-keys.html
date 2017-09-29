@@ -21,6 +21,13 @@
       }
     }
 
+    const KEY_MANAGER_PREFIX = 'keys-manager#keys ';
+    const KEY_MANAGER = {
+      REQUEST: {
+        GENERATE: KEY_MANAGER_PREFIX + 'generate',
+      }
+    }
+
     Polymer({
       is: 'key-manager-keys',
 
@@ -55,6 +62,14 @@
         return this.keysList()
         .then((keys) => this._setKeys(keys))
         .catch((err) => console.warn(err));
+      },
+
+      generateKey: function() {
+        return this.sendRequest(KEY_MANAGER.REQUEST.GENERATE)
+        .catch((err) => {
+          console.warn(err);
+          return Promise.reject(err);
+        });
       },
 
       keysList: function() {
