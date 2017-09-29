@@ -111,27 +111,6 @@
         max-height: 320px;
       }
 
-      .installed-version {
-        @apply(--layout-flex);
-      }
-
-      .required-version {
-        color: var(--paper-red-500);
-      }
-
-      #packageVersionList {
-        max-height: 200px;
-      }
-
-      .package-version-name {
-        @apply(--paper-font-subhead);
-      }
-
-      .package-version-version {
-        @apply(--paper-font-code1);
-        color: var(--secondary-text-color);
-      }
-
       .wrapper {
         max-height: 50vh;
         overflow-y: auto;
@@ -186,6 +165,10 @@
 
       <paper-icon-button id="keys-upload" icon="cloud-upload" on-tap="onImportKey"></paper-icon-button>
       <paper-tooltip for="keys-upload">Upload</paper-tooltip>
+
+      <paper-icon-button id="keys-generate" icon="add-circle-outline" on-tap="onGenerateKey"></paper-icon-button>
+      <paper-tooltip for="keys-generate">Generate</paper-tooltip>
+
     </app-toolbar>
 
     <div id="noKeys" class="canvasCard">
@@ -195,7 +178,7 @@
 
     <iron-selector id="list" attr-for-selected="key" multi selected-values="{{selectedKeys}}">
       <template is="dom-repeat" items="[[keys]]" as="key">
-        <key-manager-list-item class="item" key="[[key]]" on-key-info="onKeyInfo" on-key-download="onKeyDownload" selected$="[[selected]]"></key-manager-list-item>
+        <key-manager-list-item class="item" key="[[key]]" on-key-info="onKeyInfo" selected$="[[selected]]"></key-manager-list-item>
       </template>
     </iron-selector>
 
@@ -326,11 +309,6 @@
         onKeyInfo: function(e, detail) {
           this.keyInfo = detail;
           this.$['info-dialog'].open();
-        },
-
-        onKeyDownload: function(e, detail) {
-          this.keyPath = detail;
-          this.fire('keys-manager-download', {filepath: detail});
         },
 
         onClearSelection: function() {
