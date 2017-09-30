@@ -20,11 +20,11 @@ def __main(argv):
         sys.stderr.write('Error directory' + settings.output_directory + 'does not exist')
         sys.exit(1)
 
-    out_filename = os.path.join(settings.output_directory, "test.pem")
+    out_filename = os.path.join(settings.output_directory, settings.basename)
 
     privatekey = open(out_filename, "w")
 
-    print >>privatekey, "test"
+    print >>privatekey, settings.basename
 
     sys.exit(0)
 

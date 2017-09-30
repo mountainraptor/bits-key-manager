@@ -64,8 +64,8 @@
         .catch((err) => console.warn(err));
       },
 
-      generateKey: function() {
-        return this.sendRequest(KEY_MANAGER.REQUEST.GENERATE)
+      generateKey: function(basename) {
+        return this.sendRequest(KEY_MANAGER.REQUEST.GENERATE, {basename:basename})
         .catch((err) => {
           console.warn(err);
           return Promise.reject(err);
