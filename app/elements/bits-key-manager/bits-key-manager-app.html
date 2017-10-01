@@ -7,9 +7,11 @@
 <link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../../bower_components/iron-dropdown/index.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-item/paper-icon-item.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item-body.html">
@@ -166,9 +168,8 @@
       <paper-icon-button id="keys-upload" icon="cloud-upload" on-tap="onImportKey"></paper-icon-button>
       <paper-tooltip for="keys-upload">Upload</paper-tooltip>
 
-      <paper-icon-button id="keys-generate" icon="add-circle-outline" on-tap="onGenerateKey"></paper-icon-button>
+      <paper-icon-button id="keys-generate" icon="add-circle-outline" on-tap="onGenerateKeyDialog"></paper-icon-button>
       <paper-tooltip for="keys-generate">Generate</paper-tooltip>
-
     </app-toolbar>
 
     <div id="noKeys" class="canvasCard">
@@ -229,6 +230,15 @@
     <div class="buttons">
       <paper-button dialog-dismiss>Cancel</paper-button>
       <paper-button dialog-confirm>Done</paper-button>
+    </div>
+  </paper-dialog>
+
+  <paper-dialog id="generate-dialog">
+    <h2>Generate Keypair</h2>
+    <paper-input value={{basename}} label="Key Name"></paper-input>
+    <div class="buttons">
+      <paper-button dialog-dismiss>Cancel</paper-button>
+      <paper-button on-tap="onGenerateKey" dialog-confirm>Generate</paper-button>
     </div>
   </paper-dialog>
 
@@ -322,8 +332,16 @@
           }, this);
         },
 
-        onImportKey: function(e, deatil) {
+        onImportKey: function(e, detail) {
           this.$['upload-dialog'].open();
+        },
+
+        onGenerateKeyDialog: function(e, detail) {
+          this.$['generate-dialog'].open();
+        },
+
+        onGenerateKey: function(e, detail) {
+          this.$.keys.generateKey(this.basename);
         },
 
         onUploadSuccess: function() {
@@ -374,7 +392,6 @@
           }
           this.selectedKeys = [];
         }
-
       });
     })();
   </script>
