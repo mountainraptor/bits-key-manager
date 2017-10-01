@@ -5,6 +5,11 @@ import sys, argparse, os
 from os.path import basename
 from Crypto.PublicKey import RSA
 
+def generate_RSA(bits=4096):
+    private = RSA.generate(bits)
+    public = private.publickey()
+    return private, public
+
 def __make_parser():
     p = argparse.ArgumentParser(description='This decrypts an encrypted file')
     p.add_argument('-b', '--basename', type=str, help='specify the keypairs base filename', default = None, required = False)
@@ -20,12 +25,23 @@ def __main(argv):
         sys.stderr.write('Error directory' + settings.output_directory + 'does not exist')
         sys.exit(1)
 
-    out_filename = os.path.join(settings.output_directory, settings.basename)
+    out_private_keypath = os.path.join(settings.output_directory, settings.basename + '.pem')
+    out_public_keypath = os.path.join(settings.output_directory, settings.basename + '.pub')
 
-    privatekey = open(out_filename, "w")
+    if (os.path.isfile(out_private_keypath) or os.path.isfile(out_public_keypath)):
+        sys.stderr.write('Error key with name ' + settings.basename + ' already exists')
+        sys.exit(2)
 
-    print >>privatekey, settings.basename
+    private_key_pem, public_key_pem = generate_RSA()
 
+    private_key_file = open(out_private_keypath, "w")
+    print >>private_key_file, private_key_pem.exportKey()
+
+    public_key_file = open(out_public_keypath, "w")
+    print >>public_key_file, public_key_pem.exportKey()
+
+    print out_private_keypath
+    print out_public_keypath
     sys.exit(0)
 
 if __name__ == "__main__":
