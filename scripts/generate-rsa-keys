@@ -11,7 +11,7 @@ def generate_RSA(bits=4096):
     return private, public
 
 def __make_parser():
-    p = argparse.ArgumentParser(description='This decrypts an encrypted file')
+    p = argparse.ArgumentParser(description='This generates an rsa-keypair')
     p.add_argument('-b', '--basename', type=str, help='specify the keypairs base filename', default = None, required = False)
     p.add_argument('-d', '--output-directory', type=str, help='specify an alternate output directory for the decrypted file', default = None, required = False)
     return p
