@@ -16,6 +16,7 @@
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item-body.html">
 <link rel="import" href="../../bower_components/paper-progress/paper-progress.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../../bower_components/paper-styles/typography.html">
 <link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
 <link rel="import" href="../../bower_components/vaadin-upload/vaadin-upload.html">
@@ -242,6 +243,8 @@
     </div>
   </paper-dialog>
 
+  <paper-toast id="toast"></paper-toast>
+
   </template>
   <script>
     (() => {
@@ -388,7 +391,11 @@
         _deleteKeys: function(selectedKeys) {
           for (var key in this.selectedKeys) {
             this.$.keys.delete(this.selectedKeys[key]._hash)
-            .then(() => this.$.keys.updateKeys());
+            .then(() => this.$.keys.updateKeys())
+            .catch((err) => {
+              this.$.toast.text = err;
+              this.$.toast.show();
+            });
           }
           this.selectedKeys = [];
         }
