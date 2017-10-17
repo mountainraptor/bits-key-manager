@@ -7,24 +7,16 @@
   ((global) => {
     'use strict';
 
-    const KEY_PREFIX = 'base#Keys ';
-    const KEY = {
-      REQUEST: {
-        LIST: KEY_PREFIX + 'list',
-        CREATE: KEY_PREFIX + 'create',
-        DELETE: KEY_PREFIX + 'delete',
-        GET_DEVICE_KEY: KEY_PREFIX + 'getDeviceKey',
-        GET_SIGNATURE_KEY: KEY_PREFIX +  'getSignatureKey'
-      },
-      EVENT: {
-        LIST: KEY_PREFIX + 'list'
-      }
-    }
-
     const KEY_MANAGER_PREFIX = 'keys-manager#keys ';
     const KEY_MANAGER = {
       REQUEST: {
-        GENERATE: KEY_MANAGER_PREFIX + 'generate',
+        LIST: KEY_MANAGER_PREFIX + 'list',
+        CREATE: KEY_MANAGER_PREFIX + 'create',
+        DELETE: KEY_MANAGER_PREFIX + 'delete',
+        GENERATE: KEY_MANAGER_PREFIX + 'generate'
+      },
+      EVENT: {
+        LIST: KEY_MANAGER_PREFIX + 'list'
       }
     }
 
@@ -45,7 +37,7 @@
       },
 
       ready: function() {
-        this.addSocketEventListener(KEY.EVENT.LIST, this._onKeyList.bind(this));
+        this.addSocketEventListener(KEY_MANAGER.EVENT.LIST, this._onKeyList.bind(this));
 
         this.addConnectRunnable(() => {
           this.keysList()
@@ -69,9 +61,9 @@
         .then((result) => {
           var stdout = '' + result;
           var stdoutsplit = stdout.split("\n");
-          return this.sendRequest(KEY.REQUEST.CREATE, {filepath: stdoutsplit[0]})
+          return this.sendRequest(KEY_MANAGER.REQUEST.CREATE, {filepath: stdoutsplit[0]})
           .then(() => {
-            return this.sendRequest(KEY.REQUEST.CREATE, {filepath: stdoutsplit[1]});
+            return this.sendRequest(KEY_MANAGER.REQUEST.CREATE, {filepath: stdoutsplit[1]});
           });
         })
         .then(() => {
@@ -84,7 +76,7 @@
       },
 
       keysList: function() {
-        return this.sendRequest(KEY.REQUEST.LIST)
+        return this.sendRequest(KEY_MANAGER.REQUEST.LIST)
         .catch((err) => {
           console.warn(err);
           return Promise.reject(err);
@@ -92,7 +84,7 @@
       },
 
       delete: function(hash) {
-        return this.sendRequest(KEY.REQUEST.DELETE, {hash: hash})
+        return this.sendRequest(KEY_MANAGER.REQUEST.DELETE, {hash: hash})
         .catch((err) => {
           console.warn(err);
           return Promise.reject(err);
