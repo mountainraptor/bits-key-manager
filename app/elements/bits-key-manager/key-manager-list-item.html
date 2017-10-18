@@ -75,7 +75,7 @@
 
     <paper-item-body two-line>
       <div id="name" class="name">[[_getKeyName(key)]]</div>
-      <div secondary>[[_getKeyHash(key)]]</div>
+      <div secondary>[[_getKeyFingerprint(key)]]</div>
     </paper-item-body>
 
     <a href="/api/keys-router/keys/[[_encodeKeyPath(key)]]/download?access_token=[[accessToken]]" download="[[key.filename]]" target="_blank" tabindex="-1">
@@ -159,6 +159,14 @@
           return 'N/A';
         } else {
           return key._hash;
+        }
+      },
+
+      _getKeyFingerprint: function(key) {
+        if (!key) {
+          return 'N/A';
+        } else {
+          return key._fingerprint.toUpperCase().replace(/(..)/g, '$1:').slice(0,-1);
         }
       },
 
