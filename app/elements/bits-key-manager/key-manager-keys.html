@@ -13,7 +13,8 @@
         LIST: KEY_MANAGER_PREFIX + 'list',
         CREATE: KEY_MANAGER_PREFIX + 'create',
         DELETE: KEY_MANAGER_PREFIX + 'delete',
-        GENERATE: KEY_MANAGER_PREFIX + 'generate'
+        GENERATE: KEY_MANAGER_PREFIX + 'generate',
+        FINGERPRINT: KEY_MANAGER_PREFIX + 'fingerprint'
       },
       EVENT: {
         LIST: KEY_MANAGER_PREFIX + 'list'
@@ -37,17 +38,11 @@
       },
 
       ready: function() {
-        this.addSocketEventListener(KEY_MANAGER.EVENT.LIST, this._onKeyList.bind(this));
-
         this.addConnectRunnable(() => {
           this.keysList()
           .then((keys) => this._setKeys(keys))
           .catch((err) => console.warn(err));
         });
-      },
-
-      _onKeyList: function(keys, data) {
-        this._setKeys(keys);
       },
 
       updateKeys: function() {
@@ -77,6 +72,9 @@
 
       keysList: function() {
         return this.sendRequest(KEY_MANAGER.REQUEST.LIST)
+        .then((keys) => {
+          return keys;
+        })
         .catch((err) => {
           console.warn(err);
           return Promise.reject(err);
