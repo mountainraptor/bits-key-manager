@@ -236,7 +236,7 @@
 
   <paper-dialog id="generate-dialog">
     <h2>Generate Keypair</h2>
-    <paper-input value={{basename}} label="Key Name" auto-validate allowed-pattern="[a-zA-Z0-9-_]"></paper-input>
+    <paper-input autofocus value={{basename}} label="Key Name" auto-validate allowed-pattern="[a-zA-Z0-9-_]"></paper-input>
     <div class="buttons">
       <paper-button dialog-dismiss>Cancel</paper-button>
       <paper-button on-tap="onGenerateKey" dialog-confirm>Generate</paper-button>
