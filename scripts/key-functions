@@ -2,10 +2,9 @@
 # This script provides tools to manipulate and extract info from RSA keys
 
 import sys, argparse, os
-from os.path import basename
+from os.path import basename, dirname, splitext
 from Crypto.PublicKey import RSA
 import hashlib
-
 
 def get_fingerprint(keyFile):
     rsaKey = None
@@ -27,6 +26,7 @@ def __make_parser():
     p = argparse.ArgumentParser(description='This does things to RSA keys')
     p.add_argument('-k', '--key', type=str, help='the key you want to do stuff to', default = None, required = True)
     p.add_argument('-f', '--fingerprint', help='get a fingerprint from a key', action = 'store_true')
+    p.add_argument('-d', '--derive_public', help='create public key file from private key', action = 'store_true')
     return p
 
 def __main(argv):
@@ -36,6 +36,26 @@ def __main(argv):
 
     if settings.fingerprint:
         print get_fingerprint(settings.key)
+
+    if settings.derive_public:
+        with open(settings.key, 'r') as f:
+            private = RSA.importKey(f.read())
+
+        if not private:
+            raise Exception("Could not read in rsa key %s" % (private))
+
+        if private.has_private():
+            public = private.publickey()
+
+            private_key_dir = dirname(settings.key)
+            private_key_basename = os.path.splitext(os.path.basename(settings.key))[0]
+            out_public_keypath = os.path.join(private_key_dir, private_key_basename + '.pub')
+            public_key_file = open(out_public_keypath, "w")
+
+            print >>public_key_file, public.exportKey()
+            print out_public_keypath
+        else:
+            raise Exception("Not a private key: %s" % (private))
 
     sys.exit(0)
 
