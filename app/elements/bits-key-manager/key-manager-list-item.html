@@ -34,10 +34,6 @@
         width: 56px;
       }
 
-      .base {
-        color: var(--primary-color);
-      }
-
       .hover {
         display: none;
       }
@@ -54,17 +50,6 @@
         color: var(--secondary-text-color);
       }
 
-      #list {
-        max-height: 200px;
-      }
-
-      #upgrade[disabled] {
-        pointer-events: all !important;
-      }
-
-      .hidden {
-        display: none !important;
-      }
     </style>
 
     <base-auth id="auth" access-token="{{accessToken}}"></base-auth>
@@ -165,7 +150,6 @@
       },
 
       _computeFingerprint: function(key) {
-        // return this.$.messageCenter.sendRequest('keys-manager#keys fingerprint', key);
         this.$.messageCenter.sendRequest('keys-manager#keys fingerprint', key)
         .then((fingerprint) => {
           this.$.fingerprint.innerHTML = fingerprint.toUpperCase().replace(/(..)/g, '$1:').slice(0,-1);;
