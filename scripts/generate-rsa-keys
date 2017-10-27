@@ -22,14 +22,14 @@ def __main(argv):
     MYDIR = os.path.dirname(os.path.realpath(__file__))
 
     if (not os.path.isdir(settings.output_directory)):
-        sys.stderr.write('Error directory' + settings.output_directory + 'does not exist')
+        sys.stderr.write('Error: directory \'' + settings.output_directory + '\' does not exist')
         sys.exit(1)
 
     out_private_keypath = os.path.join(settings.output_directory, settings.basename + '.pem')
     out_public_keypath = os.path.join(settings.output_directory, settings.basename + '.pub')
 
     if (os.path.isfile(out_private_keypath) or os.path.isfile(out_public_keypath)):
-        sys.stderr.write('Error key with name ' + settings.basename + ' already exists')
+        sys.stderr.write('Error: key with name \'' + settings.basename + '\' already exists')
         sys.exit(2)
 
     private_key_pem, public_key_pem = generate_RSA()

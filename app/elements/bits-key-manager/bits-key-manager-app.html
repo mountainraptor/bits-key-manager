@@ -339,12 +339,20 @@
         },
 
         onGenerateKey: function(e, detail) {
-          this.$.keys.generateKey(this.basename);
+          this.$.keys.generateKey(this.basename)
+          .catch((err) => {
+            this.$.toast.text = err.message;
+            this.$.toast.show();
+          });
         },
 
         onEnterKey: function(e, detail) {
           if (e.keyCode === 13) {
-            this.$.keys.generateKey(this.basename);
+            this.$.keys.generateKey(this.basename)
+            .catch((err) => {
+              this.$.toast.text = err.message;
+              this.$.toast.show();
+            });
             this.$['generate-dialog'].close();
           }
         },
