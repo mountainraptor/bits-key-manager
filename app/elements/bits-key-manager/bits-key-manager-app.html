@@ -283,7 +283,8 @@
 
         listeners: {
           'iron-overlay-opened': 'onIronOverlayOpened',
-          'upload-success': 'onUploadSuccess'
+          'upload-success': 'onUploadSuccess',
+          'upload-error': 'onUploadError'
         },
 
         _computeHasKeys: function(keys) {
@@ -359,6 +360,12 @@
 
         onUploadSuccess: function() {
           this.$.keys.updateKeys();
+        },
+
+        onUploadError: function(event) {
+          var error = JSON.parse(event.detail.xhr.responseText);
+          this.$.toast.text = error.error;
+          this.$.toast.show();
         },
 
         _openConfirmDialog: function(heading) {
