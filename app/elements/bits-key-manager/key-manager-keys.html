@@ -70,10 +70,17 @@
         });
       },
 
+      fingerprintKey: function(key) {
+        return this.sendRequest(KEY_MANAGER.REQUEST.FINGERPRINT, key);
+      },
+
       keysList: function() {
         return this.sendRequest(KEY_MANAGER.REQUEST.LIST)
         .then((keys) => {
-          return keys;
+          var promises = keys.map((key) => {
+            return this.fingerprintKey(key);
+          })
+          return Promise.all(promises);
         })
         .catch((err) => {
           console.warn(err);
