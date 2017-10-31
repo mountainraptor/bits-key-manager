@@ -60,7 +60,7 @@
 
     <paper-item-body two-line>
       <div id="name" class="name">[[_getKeyName(key)]]</div>
-      <div secondary id="fingerprint">{{fingerprint}}</div>
+      <div secondary id="fingerprint">[[_getKeyFingerprint(key)]]</div>
     </paper-item-body>
 
     <a href="/api/keys-router/keys/[[_encodeKeyPath(key)]]/download?access_token=[[accessToken]]" download="[[key.filename]]" target="_blank" tabindex="-1">
@@ -106,14 +106,6 @@
           type: Object,
           notify: true,
           reflectToAttribute: true
-        },
-
-        fingerprint: {
-          type: String,
-          value: 'fingerprinting...',
-          notify: true,
-          reflectToAttribute: true,
-          computed: '_computeFingerprint(key)'
         }
       },
 
@@ -149,12 +141,12 @@
         }
       },
 
-      _computeFingerprint: function(key) {
-        this.$.messageCenter.sendRequest('keys-manager#keys fingerprint', key)
-        .then((fingerprint) => {
-          this.$.fingerprint.innerHTML = fingerprint.toUpperCase().replace(/(..)/g, '$1:').slice(0,-1);;
-        });
-
+      _getKeyFingerprint: function(key) {
+        if (!key) {
+          return 'N/A';
+        } else {
+          return key._fingerprint.toUpperCase().replace(/(..)/g, '$1:').slice(0,-1);;
+        }
       },
 
       _getKeyPath: function(key) {
