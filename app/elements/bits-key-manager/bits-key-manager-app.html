@@ -184,10 +184,6 @@
     <div class="dialog-content">
       <div class="layout vertical">
         <div class="info">
-          <div class="label">Name</div>
-          <div class="value">{{keyInfo.name}}</div>
-        </div>
-        <div class="info">
           <div class="label">Hash</div>
           <div class="value">{{keyInfo._hash}}</div>
         </div>
@@ -285,6 +281,11 @@
           'iron-overlay-opened': 'onIronOverlayOpened',
           'upload-success': 'onUploadSuccess',
           'upload-error': 'onUploadError'
+        },
+
+        _hideKey: function() {
+          console.log('hideKey');
+          return 'None';
         },
 
         _computeHasKeys: function(keys) {
