@@ -174,7 +174,7 @@
     </div>
 
     <iron-selector id="list" attr-for-selected="key" multi selected-values="{{selectedKeys}}">
-      <template is="dom-repeat" items="[[keys]]" as="key">
+      <template is="dom-repeat" items="[[keys]]" as="key" filter="_filterKeys">
         <key-manager-list-item class="item" key="[[key]]" on-key-info="onKeyInfo" selected$="[[selected]]"></key-manager-list-item>
       </template>
     </iron-selector>
@@ -283,9 +283,10 @@
           'upload-error': 'onUploadError'
         },
 
-        _hideKey: function() {
-          console.log('hideKey');
-          return 'None';
+        // Return all Private keys, public key if no private key.
+        _filterKeys: function(keys) {
+          console.log(keys);
+          return keys;
         },
 
         _computeHasKeys: function(keys) {
