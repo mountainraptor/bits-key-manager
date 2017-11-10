@@ -14,7 +14,8 @@
         CREATE: KEY_MANAGER_PREFIX + 'create',
         DELETE: KEY_MANAGER_PREFIX + 'delete',
         GENERATE: KEY_MANAGER_PREFIX + 'generate',
-        FINGERPRINT: KEY_MANAGER_PREFIX + 'fingerprint'
+        FINGERPRINT: KEY_MANAGER_PREFIX + 'fingerprint',
+        MARKPRIVATE: KEY_MANAGER_PREFIX + 'markPrivate'
       },
       EVENT: {
         LIST: KEY_MANAGER_PREFIX + 'list'
@@ -74,11 +75,21 @@
         return this.sendRequest(KEY_MANAGER.REQUEST.FINGERPRINT, key);
       },
 
+      markKeyPrivate: function(key) {
+        return this.sendRequest(KEY_MANAGER.REQUEST.MARKPRIVATE, key);
+      },
+
       keysList: function() {
         return this.sendRequest(KEY_MANAGER.REQUEST.LIST)
         .then((keys) => {
           var promises = keys.map((key) => {
             return this.fingerprintKey(key);
+          })
+          return Promise.all(promises);
+        })
+        .then((keys) => {
+          var promises = keys.map((key) => {
+            return this.markKeyPrivate(key);
           })
           return Promise.all(promises);
         })
