@@ -174,7 +174,7 @@
     </div>
 
     <iron-selector id="list" attr-for-selected="key" multi selected-values="{{selectedKeys}}">
-      <template is="dom-repeat" items="[[keys]]" as="key">
+      <template is="dom-repeat" items="[[keys]]" as="key" filter="_filterKeys">
         <key-manager-list-item class="item" key="[[key]]" on-key-info="onKeyInfo" selected$="[[selected]]"></key-manager-list-item>
       </template>
     </iron-selector>
@@ -183,10 +183,6 @@
     <h2>Key Info</h2>
     <div class="dialog-content">
       <div class="layout vertical">
-        <div class="info">
-          <div class="label">Name</div>
-          <div class="value">{{keyInfo.name}}</div>
-        </div>
         <div class="info">
           <div class="label">Hash</div>
           <div class="value">{{keyInfo._hash}}</div>
@@ -285,6 +281,16 @@
           'iron-overlay-opened': 'onIronOverlayOpened',
           'upload-success': 'onUploadSuccess',
           'upload-error': 'onUploadError'
+        },
+
+        // Return all Private keys, public key if no private key.
+        _filterKeys: function(key) {
+          var keysList = this.keys;
+          var numKeysWithFingerprint = keysList.reduce(function (n, localkey) {
+            return n + (localkey._fingerprint == key._fingerprint);
+          }, 0);
+          return key._private || numKeysWithFingerprint < 2;
+          //return key //if you want to remove filter use this
         },
 
         _computeHasKeys: function(keys) {

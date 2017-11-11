@@ -56,7 +56,7 @@
 
     <base-message-center id="messageCenter"></base-message-center>
 
-    <iron-icon id="display" style="" icon="[[_getKeyIcon(key)]]" item-icon></iron-icon>
+    <iron-icon id="icon" style="color: {{_getKeyColor}};" icon="communication:vpn-key" item-icon></iron-icon>
 
     <paper-item-body two-line>
       <div id="name" class="name">[[_getKeyName(key)]]</div>
@@ -84,20 +84,6 @@
   (() => {
     'use strict';
 
-    function isPrivateKey(messageCenter, key) {
-      return messageCenter.sendRequest('keys-manager#keys isPrivate', key)
-      .then((isPrivate) => {
-        if(isPrivate) {
-          return true;
-        } else {
-          return false;
-        }
-      })
-      .catch((err) => {
-        console.error('err');
-      });
-    }
-
     Polymer({
       is: 'key-manager-list-item',
 
@@ -113,30 +99,17 @@
         Polymer.IronResizableBehavior
       ],
 
-      _getKeyIcon: function(key) {
-        isPrivateKey(this.$.messageCenter, this.key)
-        .then((bool) => {
-          this.$.display.setAttribute("icon", 'communication:vpn-key');
-          if(bool) {
-            this.$.display.setAttribute("style", 'color:red');
-          } else {
-            this.$.display.setAttribute("style", 'color:black');
-          }
-        });
-      },
-
       _getKeyName: function(key) {
         if (!key) {
           return 'N/A';
         } else {
-          isPrivateKey(this.$.messageCenter, this.key)
-          .then((bool) => {
-            if(bool) {
-              this.$.name.innerHTML=this.key.name + " (Private)";
-            } else {
-              this.$.name.innerHTML=this.key.name + " (Public)";
-            }
-          });
+          if(key._private) {
+            this.$.icon.setAttribute("style", 'color:red');
+            this.$.name.innerHTML=this.key.name + " (Private)";
+          } else {
+            this.$.icon.setAttribute("style", 'color:black');
+            this.$.name.innerHTML=this.key.name + " (Public)";
+          }
           return key.name;
         }
       },

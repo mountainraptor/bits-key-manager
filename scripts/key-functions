@@ -22,11 +22,25 @@ def get_fingerprint(keyFile):
         fingerprint = hashlib.md5(rsaKey.exportKey('DER')).hexdigest()
         return fingerprint
 
+def is_private(keyFile):
+    rsaKey = None
+    with open(keyFile, 'r') as f:
+        rsaKey = RSA.importKey(f.read())
+
+    if not rsaKey:
+        raise Exception("Could not read in rsa key %s" % (keyFile))
+
+    if rsaKey.has_private():
+        return "true"
+    else:
+        return "false"
+
 def __make_parser():
     p = argparse.ArgumentParser(description='This does things to RSA keys')
     p.add_argument('-k', '--key', type=str, help='the key you want to do stuff to', default = None, required = True)
     p.add_argument('-f', '--fingerprint', help='get a fingerprint from a key', action = 'store_true')
     p.add_argument('-d', '--derive_public', help='create public key file from private key', action = 'store_true')
+    p.add_argument('-p', '--is_private', help='test if key is private', action = 'store_true')
     return p
 
 def __main(argv):
@@ -56,6 +70,9 @@ def __main(argv):
             print out_public_keypath
         else:
             raise Exception("Not a private key: %s" % (private))
+
+    if settings.is_private:
+        print is_private(settings.key)
 
     sys.exit(0)
 
