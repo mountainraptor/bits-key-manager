@@ -284,9 +284,13 @@
         },
 
         // Return all Private keys, public key if no private key.
-        _filterKeys: function(keys) {
-          console.log(keys);
-          return keys;
+        _filterKeys: function(key) {
+          var keysList = this.keys;
+          var numKeysWithFingerprint = keysList.reduce(function (n, localkey) {
+            return n + (localkey._fingerprint == key._fingerprint);
+          }, 0);
+          return key._private || numKeysWithFingerprint < 2;
+          //return key //if you want to remove filter use this
         },
 
         _computeHasKeys: function(keys) {
