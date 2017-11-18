@@ -105,10 +105,10 @@
         } else {
           if(key._private) {
             this.$.icon.setAttribute("style", 'color:red');
-            this.$.name.innerHTML=this.key.name + " (Private)";
+            this.$.name.innerHTML=this.key.name + " (RSA Keypair)";
           } else {
             this.$.icon.setAttribute("style", 'color:black');
-            this.$.name.innerHTML=this.key.name + " (Public)";
+            this.$.name.innerHTML=this.key.name + " (Public Only)";
           }
           return key.name;
         }
